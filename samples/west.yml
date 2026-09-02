@@ -82,14 +82,14 @@ manifest:
           - babblesim_ext_2G4_device_playbackv2
           - babblesim_ext_libCryptov1
           - doc-internal
-          
-    - name: dectnrp-opener
-      remote: dectnrp
-      repo-path: opener
-      # Always use git tag or commit hash as a revision
-      revision: main
-      path: deps/dectnrp-opener
 
+    - name: dectnrp-opener
+      # remote: dectnrp
+      # repo-path: opener
+      url: git@github.com:codium-electronique/opener.git
+      # Always use git tag or commit hash as a revision
+      revision: add-codium-boards
+      path: deps/dectnrp-opener
 
   self:
     path: app

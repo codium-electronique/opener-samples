@@ -233,6 +233,71 @@
 					]
 				},
 			},
+			{
+				"name": "Codium-tests (launch)",
+				"type": "cortex-debug",
+				"device": "NRF9151_xxca",
+				"executable": "${workspaceFolder}/samples/codium-tests/build/codium-tests/zephyr/zephyr.elf",
+				"loadFiles": [
+					"${workspaceFolder}/samples/codium-tests/build/codium-tests/zephyr/zephyr.signed.hex"
+				],
+				"cwd": "${workspaceFolder}",
+				//"rtos": "Zephyr",
+				"request": "launch",
+				"runToEntryPoint": "main",
+				"servertype": "jlink",
+				"interface": "swd",
+				"serverArgs": [
+					"-jlinkscriptfile", 
+					"${workspaceFolder}/deps/dectnrp-opener/boards/codium/cod_nrp_gw/support/nrf9151_connect_under_reset.JLinkScript"
+				],
+				"gdbPath": "${config:zephyrSdkPath}/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
+				"svdPath": "${workspaceFolder}/deps/modules/hal/nordic/nrfx/mdk/nrf9120.svd",
+				"showDevDebugOutput": "parsed",
+				"rttConfig": { // this automatically opens a rtt viewer terminal
+					"enabled": true,
+					"address": "auto",
+					"decoders": [
+						{
+							"port": 0,
+							"timestamp": true,
+							"type": "console"
+						}
+					]
+				},
+			},
+			{
+				"name": "Codium-tests (remote launch)",
+				"type": "cortex-debug",
+				"device": "NRF9151_xxca",
+				"executable": "${workspaceFolder}/samples/codium-tests/build/codium-tests/zephyr/zephyr.elf",
+				"loadFiles": [
+					"${workspaceFolder}/samples/codium-tests/build/codium-tests/zephyr/zephyr.signed.hex"
+				],
+				"cwd": "${workspaceFolder}",
+				//"rtos": "Zephyr",
+				"request": "launch",
+				"runToEntryPoint": "main",
+				"servertype": "external",
+				"gdbTarget": "172.16.1.134:3333",
+				"gdbPath": "${config:zephyrSdkPath}/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
+				"svdPath": "${workspaceFolder}/deps/modules/hal/nordic/nrfx/mdk/nrf9120.svd",
+				"preLaunchCommands": [
+					"set remotetimeout 1"
+				],
+				"showDevDebugOutput": "parsed",
+				"rttConfig": { // this automatically opens a rtt viewer terminal
+					"enabled": true,
+					"address": "auto",
+					"decoders": [
+						{
+							"port": 0,
+							"timestamp": true,
+							"type": "console"
+						}
+					]
+				},
+			},
 		],
 	},
 	"extensions": {
