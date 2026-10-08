@@ -237,9 +237,9 @@
 				"name": "Codium-tests (launch)",
 				"type": "cortex-debug",
 				"device": "NRF9151_xxca",
-				"executable": "${workspaceFolder}/samples/codium-tests/build/codium-tests/zephyr/zephyr.elf",
+				"executable": "${config:build-folder}/cod_nrp_gw/nrf9151/ns/codium-tests/codium-tests/zephyr/zephyr.elf",
 				"loadFiles": [
-					"${workspaceFolder}/samples/codium-tests/build/codium-tests/zephyr/zephyr.signed.hex"
+					"${config:build-folder}/cod_nrp_gw/nrf9151/ns/codium-tests/codium-tests/zephyr/tfm_merged.hex"
 				],
 				"cwd": "${workspaceFolder}",
 				//"rtos": "Zephyr",
@@ -270,9 +270,9 @@
 				"name": "Codium-tests (remote launch)",
 				"type": "cortex-debug",
 				"device": "NRF9151_xxca",
-				"executable": "${workspaceFolder}/samples/codium-tests/build/codium-tests/zephyr/zephyr.elf",
+				"executable": "${config:build-folder}/cod_nrp_gw/nrf9151/ns/codium-tests/codium-tests/zephyr/zephyr.elf",
 				"loadFiles": [
-					"${workspaceFolder}/samples/codium-tests/build/codium-tests/zephyr/zephyr.signed.hex"
+					"${config:build-folder}/cod_nrp_gw/nrf9151/ns/codium-tests/codium-tests/zephyr/tfm_merged.hex"
 				],
 				"cwd": "${workspaceFolder}",
 				//"rtos": "Zephyr",

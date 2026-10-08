@@ -375,3 +375,8 @@ int main(void)
 
 	return 0;
 }
+
+/* Stub needed to build */
+void dectnrp_l2_init(struct net_if *iface)
+{
+}
