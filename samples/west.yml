@@ -84,15 +84,14 @@ manifest:
           - doc-internal
           
     - name: dectnrp-opener
-      remote: dectnrp
-      repo-path: opener
+      url: git@github.com:codium-electronique/opener.git
       # Always use git tag or commit hash as a revision
-      revision: main
+      revision: spinel-ctrl
       path: deps/dectnrp-opener
 
     - name: codz-sdk
-      url: https://github.com/codium-electronique/codz-sdk.git
-      revision: main
+      url: git@github.com:codium-electronique/codz-sdk.git
+      revision: spinel-ctrl
       path: deps/codz-sdk
 
   self:
