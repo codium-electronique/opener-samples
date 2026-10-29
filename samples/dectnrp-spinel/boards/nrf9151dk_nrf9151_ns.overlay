@@ -1,0 +1,17 @@
+/*
+ * Copyright (c) 2026 Codium Electronique
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include "nrf91x1_partition_without_bootloader.dtsi"
+#include "nrf91x1_dect_modem.dtsi"
+
+/ {
+	chosen {
+		opener,spinel-uart = &uart0;
+	};
+};
+
+&uart0 {
+	current-speed = <1000000>;
+};

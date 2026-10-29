@@ -1,0 +1,7 @@
+sample:
+  name: dectnrp-spinel
+  description: DECT NR+ radio co-processor controlled over Spinel
+tests:
+  sample.dectnrp_spinel:
+    platform_allow:
+      - nrf9151dk/nrf9151/ns
