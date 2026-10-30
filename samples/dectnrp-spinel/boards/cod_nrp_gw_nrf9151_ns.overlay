@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) 2026 Codium Electronique
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include "nrf91x1_partition_without_bootloader.dtsi"
+#include "nrf91x1_dect_modem.dtsi"
+
+/* Spinel over SPI to the gateway's Linux host (spi3.0 on its side). */
+&spi2 {
+	/* Clocked while the SPI slave is not armed: an invalid header. */
+	def-char = <0xff>;
+	/* The SPI slave uses its CSN pin; a CS GPIO would drive P0.05. */
+	/delete-property/ cs-gpios;
+
+	spinel_spi: spinel@0 {
+		compatible = "opener,spinel-spi";
+		reg = <0>;
+		spi-max-frequency = <8000000>;
+		irq-gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
+		busy-gpios = <&gpio0 26 GPIO_ACTIVE_HIGH>;
+	};
+};

@@ -42,6 +42,11 @@ jobs:
         env:
           ZEPHYR_TOOLCHAIN_VARIANT: zephyr
 
+      - name: Build dectnrp-spinel for the NR+Gate (Spinel over SPI)
+        run: west build -p always -b cod_nrp_gw/nrf9151/ns -d ${BUILD_BASE}/dectnrp-spinel-gw samples/dectnrp-spinel/
+        env:
+          ZEPHYR_TOOLCHAIN_VARIANT: zephyr
+
       - name: Stage artifacts
         run: |
           # Create a artifacts folder
