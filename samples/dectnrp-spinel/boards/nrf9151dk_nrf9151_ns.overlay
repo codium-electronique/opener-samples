@@ -14,4 +14,9 @@
 
 &uart0 {
 	current-speed = <1000000>;
+	/* Without it, the UARTE loses received bytes when its interrupt is served
+	 * late, about one host frame in 4000 at 1 Mbaud. The interface MCU of
+	 * the DK and EK follows RTS.
+	 */
+	hw-flow-control;
 };

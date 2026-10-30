@@ -33,9 +33,11 @@ Build and flash for the nRF9151 DK:
 
 For the nRF9131 EK, use the board ``nrf9131ek/nrf9131/ns``.
 
-Spinel runs on ``uart0`` at 1 000 000 baud, with HDLC-lite framing: on the DK
-and the EK, it is the first virtual COM port of the on-board debugger. The
-console and the logs go to SEGGER RTT.
+Spinel runs on ``uart0`` at 1 000 000 baud, with HDLC-lite framing and
+hardware flow control: on the DK and the EK, it is the first virtual COM port
+of the on-board debugger, which follows RTS. Without flow control, the UARTE
+loses bytes from the host when its interrupt is served late. The console and
+the logs go to SEGGER RTT.
 
 The boot notification is sent before any host can open the port, so a host
 starts with a Spinel ``CMD_RESET`` and waits for the ``RESET_SOFTWARE``
