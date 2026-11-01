@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Codium Electronique
  * Copyright (c) 2026 Deveritec GmbH
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -10,41 +11,84 @@
  *
  */
 
+#include <errno.h>
+#include <string.h>
+
 #include "dectnrp_mac_helper.h"
 
+/** Offset of the MAC mux header of the User Flow 1 IE in the frame. */
+#define MUX_OFFSET 13
+
 /**
- * @brief Test frame with one SDU containing User Flow 1 IE (and padding).
- *
+ * @brief Start of the test frame: PHY header, MAC header type and MAC data header.
  */
-static uint8_t frame[] = {
+static const uint8_t frame_head[MUX_OFFSET] = {
 	/* PHY header */
-	0x10,             /* Header format=0, packetlength-type=SLOTS, packet length=1 slot */
-	0x78,             /* Short Network ID */
-	0xee, 0xff,       /* Transmitter ID (short id)*/
-	0x71,             /* Transmit Power=7(0dBm), DF MCS=1 */
-	0xff, 0xff,       /* Receiver Id */
-	0x00, 0x00, 0x00, /* Feedback Format0 - no feedback */
+	0x10, /* Header format=0, packetlength-type=SLOTS, packet length=1 slot */
+	0x78, /* Short Network ID */
+	0xee,
+	0xff, /* Transmitter ID (short id)*/
+	0x71, /* Transmit Power=7(0dBm), DF MCS=1 */
+	0xff,
+	0xff, /* Receiver Id */
+	0x00,
+	0x00,
+	0x00, /* Feedback Format0 - no feedback */
 
 	/* MAC header type */
 	0x00, /* Data header, without security */
 	/* MAC data header */
-	0x00, 0x17, /* No reset, sequence number=0x17 */
-
-	/* MAC mux header */
-	0x43, 0xd, /* Medium SDU, User Flow 1 IE, 13 bytes payload */
-	/* User Flow 1 IE + user payload Hello World!\n*/
-	0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x0a,
-
-	/* MAC mux header */
-	0x40, 0x11, /* Medium SDU, Padding IE, 17 bytes payload */
-	/* Padding IE */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00
-
+	0x00,
+	0x17, /* No reset, sequence number=0x17 */
 };
 
-uint8_t *sample_frame = &frame[0];
-const size_t sample_frame_size = sizeof(frame);
+const uint8_t sample_frame_default_payload[] = "Hello World!\n";
+const size_t sample_frame_default_payload_size = sizeof(sample_frame_default_payload) - 1;
+
+int sample_frame_build(uint8_t *frame, size_t frame_size, const uint8_t *payload,
+		       size_t payload_size)
+{
+	if (frame == NULL || frame_size < SAMPLE_FRAME_SIZE ||
+	    payload_size > SAMPLE_FRAME_PAYLOAD_MAX || (payload == NULL && payload_size != 0)) {
+		return -EINVAL;
+	}
+
+	memset(frame, 0, SAMPLE_FRAME_SIZE);
+	memcpy(frame, frame_head, sizeof(frame_head));
+
+	/* MAC mux header: MAC_Ext 01 (8-bit length), IE type 000011 (User plane data,
+	 * flow 1), then the payload length (ETSI TS 103 636-4 V2.2.1 Tables 6.3.4-1
+	 * and 6.3.4-2).
+	 */
+	size_t offset = MUX_OFFSET;
+
+	frame[offset++] = 0x43;
+	frame[offset++] = (uint8_t)payload_size;
+	if (payload_size > 0) {
+		memcpy(&frame[offset], payload, payload_size);
+		offset += payload_size;
+	}
+
+	/* The slot keeps its size, so the rest of the 32 bytes after the MAC header is a
+	 * Padding IE (ETSI TS 103 636-4 V2.2.1 §6.4.3.8, Tables 6.3.4-1, 6.3.4-3 and
+	 * 6.3.4-4): one byte is the mux header 0xC0 alone (MAC_Ext 11, length bit 0),
+	 * two bytes are the mux header 0xE0 (MAC_Ext 11, length bit 1) and one padding byte,
+	 * more are the mux header 0x40 (MAC_Ext 01) with a length byte, then zeros.
+	 */
+	size_t remaining = SAMPLE_FRAME_PAYLOAD_MAX - payload_size;
+
+	if (remaining == 1) {
+		frame[offset] = 0xC0;
+	} else if (remaining == 2) {
+		frame[offset] = 0xE0;
+	} else if (remaining >= 3) {
+		frame[offset] = 0x40;
+		frame[offset + 1] = (uint8_t)(remaining - 2);
+	}
+
+	return SAMPLE_FRAME_SIZE;
+}
+
 const uint8_t sample_frame_phy_header_type = 1;
 const struct dectnrp_transport_parameters sample_frame_parameters = {
 	.beta = 1,

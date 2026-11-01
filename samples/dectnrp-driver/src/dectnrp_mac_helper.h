@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Codium Electronique
  * Copyright (c) 2026 Deveritec GmbH
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -17,23 +18,43 @@
 #include <stdint.h>
 #include <zephyr/net/dectnrp_driver.h>
 
-/**
- * @brief Pointer to the sample frame.
- */
-extern uint8_t *sample_frame;
+/** Size of the sample frame: 10 bytes PHY header and a 37 bytes PDC (TBS). */
+#define SAMPLE_FRAME_SIZE 47
+
+/** Most payload bytes the User Flow 1 IE can carry in the sample frame. */
+#define SAMPLE_FRAME_PAYLOAD_MAX 32
 
 /**
- * @brief Size of sample_frame.
+ * @brief Default payload, "Hello World!\n".
  */
-extern const size_t sample_frame_size;
+extern const uint8_t sample_frame_default_payload[];
 
 /**
- * @brief PHY header type of sample_frame.
+ * @brief Size of sample_frame_default_payload.
+ */
+extern const size_t sample_frame_default_payload_size;
+
+/**
+ * @brief Build the sample frame with @p payload in the User Flow 1 IE.
+ *
+ * The rest of the slot is filled with a Padding IE.
+ *
+ * @param frame buffer receiving the frame
+ * @param frame_size size of @p frame, at least SAMPLE_FRAME_SIZE
+ * @param payload User Flow 1 payload, may be NULL if @p payload_size is 0
+ * @param payload_size at most SAMPLE_FRAME_PAYLOAD_MAX
+ * @return SAMPLE_FRAME_SIZE on success, -EINVAL on invalid arguments
+ */
+int sample_frame_build(uint8_t *frame, size_t frame_size, const uint8_t *payload,
+		       size_t payload_size);
+
+/**
+ * @brief PHY header type of the sample frame.
  */
 extern const uint8_t sample_frame_phy_header_type;
 
 /**
- * @brief Transport parameters of sample_frame.
+ * @brief Transport parameters of the sample frame.
  */
 extern const struct dectnrp_transport_parameters sample_frame_parameters;
 

@@ -24,6 +24,9 @@ LOG_MODULE_REGISTER(dectnrp_driver_sample, CONFIG_SAMPLE_DRIVER_DECTNRP_LOG_LEVE
 
 extern struct k_fifo dectnrp_event_fifo;
 
+/* The frame sent each cycle. */
+static uint8_t tx_frame[SAMPLE_FRAME_SIZE];
+
 static uint32_t network_id = CONFIG_DECTNRP_SAMPLE_NETWORK_ID;
 
 enum state {
@@ -420,7 +423,14 @@ int main()
 		const uint8_t frames = 1;
 		rssi1_scan(iface, frames);
 
-		/* Do periodically receive and send sample_frame via dectnrp_driver. */
+		ret = sample_frame_build(tx_frame, sizeof(tx_frame), sample_frame_default_payload,
+					 sample_frame_default_payload_size);
+		if (ret < 0) {
+			LOG_ERR("Building the tx frame failed, %d", ret);
+			return ret;
+		}
+
+		/* Do periodically receive and send the sample frame via dectnrp_driver. */
 		do {
 			bool received = false;
 			ret = receive(iface, period, &received);
@@ -481,12 +491,12 @@ int main()
 			}
 
 			/* Update tx packet. */
-			uint8_t *pcc = &sample_frame[0];
+			uint8_t *pcc = &tx_frame[0];
 			pcc_set_short_network_id(pcc, network_id);
 			pcc_set_transmitter_short_id(pcc, local_device.short_device_id);
 			pcc_set_receiver_short_id(pcc, remote_device.short_device_id);
 
-			ret = transmit(iface, &sample_frame[0], sample_frame_size,
+			ret = transmit(iface, &tx_frame[0], sizeof(tx_frame),
 				       sample_frame_phy_header_type, &sample_frame_parameters,
 				       tx_start_time);
 			if (ret != 0) {
