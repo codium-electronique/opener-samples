@@ -14,9 +14,10 @@ config DECTNRP_SAMPLE_NETWORK_ID
 	default 0x32545279
 	range 0x0 0xffffffff
 	help
-	  The default Network ID of the network this radio device should belong to.
-	  When NET_CONFIG_DECTNRP_NETWORK_ID==0x0 is configured then no Network ID is choosen 
-	  per default.
+	  The Network ID of the network this radio device belongs to. Override it
+	  at build time with -DCONFIG_DECTNRP_SAMPLE_NETWORK_ID=0x12345678. Every
+	  device of the network, and the host tools (--network-id or
+	  NRP_NETWORK_ID), must use the same value.
 
 config DECTNRP_SAMPLE_LONG_DEVICE_ID
 	hex "Long device address"
@@ -38,8 +39,12 @@ config DECTNRP_SAMPLE_LONG_ADDR
 config DECTNRP_SAMPLE_CHANNEL
 	int "DECTNRP sample default channel"
 	default 1677
+	range 0 65535
 	help
-	  The channel to use by default in the sample application. 1677 is last channel of band 1.
+	  The channel (carrier number) used by the sample application. 1677 is
+	  the last channel of band 1. Override it at build time with
+	  -DCONFIG_DECTNRP_SAMPLE_CHANNEL=1665. Every device of the network, and
+	  the host tools (--channel or NRP_CHANNEL), must use the same value.
 
 config DECTNRP_SAMPLE_PERIOD
 	int "RX period"

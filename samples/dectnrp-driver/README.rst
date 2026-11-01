@@ -80,7 +80,23 @@ For single device tests you can run it on one board. For testing real communicat
 
 If you are using vscode the attached `sample-linux.code-workspace <../../sample-linux.code-workspace>`_ contains some build and flash tasks and additionally debug launch configurations.
 
-* Adjust ``CONFIG_DECTNRP_SAMPLE_CHANNEL`` and other project settings in `prj.conf <prj.conf>`_ to your needs.
+* The channel and network ID default to the values in `prj.conf <prj.conf>`_. To select others (for example on a demo booth) override them at build time, no file edit needed:
+
+  .. code-block:: bash
+
+      west build -p -b nrf9151dk/nrf9151/ns samples/dectnrp-driver -- \
+        -DCONFIG_DECTNRP_SAMPLE_CHANNEL=1665 -DCONFIG_DECTNRP_SAMPLE_NETWORK_ID=0x12345678
+
+  With the Codium boards add the options after the ``-DEXTRA_...`` ones:
+
+  .. code-block:: bash
+
+      west build -p -b cod_nrp_node/nrf9151/ns samples/dectnrp-driver -- \
+        -DEXTRA_DTC_OVERLAY_FILE=boards/nrf9151dk_nrf9151_ns.overlay -DEXTRA_CONF_FILE=boards/nrf9151dk_nrf9151_ns.conf \
+        -DCONFIG_DECTNRP_SAMPLE_CHANNEL=1665 -DCONFIG_DECTNRP_SAMPLE_NETWORK_ID=0x12345678
+
+  The boot log lines ``- network id`` and ``- channel`` confirm the values in use. Peers (another board, ``nrp-ping``, ``nrp-sniffer``) must use the same channel and network ID.
+* Adjust other project settings in `prj.conf <prj.conf>`_ to your needs.
 * Assuming you have one/two SEGGER JLink override there serials (see ``device1-serial-number`` and ``device2-serial-number``) to ``.vscode/settings.json`` or directly override values in `sample-linux.code-workspace <../../sample-linux.code-workspace>`_.
 * Build sample *dectnrp_driver* as descriped in top-level README.md or using vscode tasks.
 * Connect one nrf9151dk (device 1) via USB.
