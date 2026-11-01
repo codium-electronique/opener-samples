@@ -119,6 +119,14 @@ ZTEST(sensor_payload, test_clamp_i16)
 	zassert_equal(value, -32768);
 	value = sensor_payload_clamp_i16(-5);
 	zassert_equal(value, -5);
+	value = sensor_payload_clamp_i16(INT64_MAX);
+	zassert_equal(value, 32767);
+	value = sensor_payload_clamp_i16(INT64_MIN);
+	zassert_equal(value, -32768);
+	value = sensor_payload_clamp_i16((int64_t)1 << 32);
+	zassert_equal(value, 32767);
+	value = sensor_payload_clamp_i16(-((int64_t)1 << 32));
+	zassert_equal(value, -32768);
 }
 
 ZTEST(sensor_payload, test_clamp_u16)
@@ -128,5 +136,11 @@ ZTEST(sensor_payload, test_clamp_u16)
 	value = sensor_payload_clamp_u16(-1);
 	zassert_equal(value, 0);
 	value = sensor_payload_clamp_u16(70000);
+	zassert_equal(value, 65535);
+	value = sensor_payload_clamp_u16(INT64_MAX);
+	zassert_equal(value, 65535);
+	value = sensor_payload_clamp_u16(INT64_MIN);
+	zassert_equal(value, 0);
+	value = sensor_payload_clamp_u16((int64_t)1 << 32);
 	zassert_equal(value, 65535);
 }

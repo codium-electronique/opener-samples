@@ -56,8 +56,8 @@ void sensor_payload_pack(const struct sensor_payload_values *values,
 uint8_t sensor_payload_battery_pct(uint16_t battery_mv);
 
 /** Clamp to the range of a 16-bit field, values never wrap. */
-int16_t sensor_payload_clamp_i16(int32_t value);
-uint16_t sensor_payload_clamp_u16(int32_t value);
+int16_t sensor_payload_clamp_i16(int64_t value);
+uint16_t sensor_payload_clamp_u16(int64_t value);
 
 /**
  * Read the sensors found in the devicetree. Fills every group it can read and sets its flag,

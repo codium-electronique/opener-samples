@@ -19,7 +19,7 @@ static const struct battery_point battery_table[] = {
 	{3840, 50}, {3870, 60}, {3950, 70}, {4020, 80}, {4110, 90}, {4200, 100},
 };
 
-int16_t sensor_payload_clamp_i16(int32_t value)
+int16_t sensor_payload_clamp_i16(int64_t value)
 {
 	if (value > INT16_MAX) {
 		return INT16_MAX;
@@ -30,7 +30,7 @@ int16_t sensor_payload_clamp_i16(int32_t value)
 	return (int16_t)value;
 }
 
-uint16_t sensor_payload_clamp_u16(int32_t value)
+uint16_t sensor_payload_clamp_u16(int64_t value)
 {
 	if (value > UINT16_MAX) {
 		return UINT16_MAX;

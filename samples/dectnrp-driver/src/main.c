@@ -458,18 +458,19 @@ int main()
 			if (sensors.temperature_centi_c < 0) {
 				temperature_sign = '-';
 			}
+			int temperature_whole = abs(sensors.temperature_centi_c / 100);
+			int temperature_frac = abs(sensors.temperature_centi_c % 100);
+
 			LOG_INF("sensors 0x%02x: %c%d.%02d C %u.%02u %%RH, accel %d %d %d mg, "
 				"magn %d %d %d mG, battery %u mV %u %% %d mA, charger 0x%02x "
 				"err 0x%02x vbus 0x%02x",
-				sensors.flags, temperature_sign,
-				abs(sensors.temperature_centi_c / 100),
-				abs(sensors.temperature_centi_c % 100),
-				sensors.humidity_centi_pct / 100, sensors.humidity_centi_pct % 100,
-				sensors.accel_mg[0], sensors.accel_mg[1], sensors.accel_mg[2],
-				sensors.magn_mgauss[0], sensors.magn_mgauss[1],
-				sensors.magn_mgauss[2], sensors.battery_mv, sensors.battery_pct,
-				sensors.battery_ma, sensors.charger_status, sensors.charger_error,
-				sensors.vbus_status);
+				sensors.flags, temperature_sign, temperature_whole,
+				temperature_frac, sensors.humidity_centi_pct / 100,
+				sensors.humidity_centi_pct % 100, sensors.accel_mg[0],
+				sensors.accel_mg[1], sensors.accel_mg[2], sensors.magn_mgauss[0],
+				sensors.magn_mgauss[1], sensors.magn_mgauss[2], sensors.battery_mv,
+				sensors.battery_pct, sensors.battery_ma, sensors.charger_status,
+				sensors.charger_error, sensors.vbus_status);
 #endif
 			bool received = false;
 			ret = receive(iface, period, &received);

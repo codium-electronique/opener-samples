@@ -258,6 +258,7 @@ Offset Size Field             Unit / encoding
 
 The battery level is a piecewise-linear estimate of a single-cell LiPo (4.2 V termination) from its voltage only.
 It reads high while charging and low under load, treat it as indicative.
+With no battery fitted, the nPM1300 holds VBAT near the termination voltage and may still report a battery as detected and charging; the voltage and level then mean nothing.
 
 The option is enabled by ``boards/cod_nrp_node_nrf9151_ns.conf``. Build for the Codium NR+Node with:
 

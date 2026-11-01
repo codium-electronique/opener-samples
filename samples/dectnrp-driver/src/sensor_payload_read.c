@@ -50,8 +50,8 @@ static int read_climate(struct sensor_payload_values *values)
 	int64_t temperature_milli = sensor_value_to_milli(&temperature);
 	int64_t humidity_milli = sensor_value_to_milli(&humidity);
 
-	values->temperature_centi_c = sensor_payload_clamp_i16((int32_t)(temperature_milli / 10));
-	values->humidity_centi_pct = sensor_payload_clamp_u16((int32_t)(humidity_milli / 10));
+	values->temperature_centi_c = sensor_payload_clamp_i16(temperature_milli / 10);
+	values->humidity_centi_pct = sensor_payload_clamp_u16(humidity_milli / 10);
 	values->flags |= SENSOR_PAYLOAD_CLIMATE;
 	return 0;
 }
@@ -109,7 +109,7 @@ static int read_magn(struct sensor_payload_values *values)
 	for (int axis = 0; axis < 3; axis++) {
 		int64_t magn_mgauss = sensor_value_to_milli(&magn[axis]);
 
-		values->magn_mgauss[axis] = sensor_payload_clamp_i16((int32_t)magn_mgauss);
+		values->magn_mgauss[axis] = sensor_payload_clamp_i16(magn_mgauss);
 	}
 	values->flags |= SENSOR_PAYLOAD_MAGN;
 	return 0;
@@ -161,9 +161,9 @@ static int read_battery(struct sensor_payload_values *values)
 	int64_t voltage_mv = sensor_value_to_milli(&voltage);
 	int64_t current_ma = sensor_value_to_milli(&current);
 
-	values->battery_mv = sensor_payload_clamp_u16((int32_t)voltage_mv);
+	values->battery_mv = sensor_payload_clamp_u16(voltage_mv);
 	values->battery_pct = sensor_payload_battery_pct(values->battery_mv);
-	values->battery_ma = sensor_payload_clamp_i16((int32_t)current_ma);
+	values->battery_ma = sensor_payload_clamp_i16(current_ma);
 	values->charger_status = (uint8_t)status.val1;
 	values->charger_error = (uint8_t)error.val1;
 	values->vbus_status = (uint8_t)vbus.val1;
