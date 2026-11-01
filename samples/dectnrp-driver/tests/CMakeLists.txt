@@ -8,5 +8,7 @@ project(dectnrp_driver_frame)
 target_include_directories(app PRIVATE ../src)
 target_sources(app PRIVATE
     src/test_frame.c
+    src/test_sensor_payload.c
     ../src/dectnrp_mac_helper.c
+    ../src/sensor_payload.c
 )
