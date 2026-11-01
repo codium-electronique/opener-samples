@@ -331,6 +331,24 @@ static int transmit(struct net_if *iface, const uint8_t *data, size_t size, uint
 	return ret;
 }
 
+/* ETSI TS 103 636-4 V2.2.1 Table 4.2.3.3-1: 0x0000 shall not be used as a short radio device
+ * ID and 0xFFFF is the broadcast address.
+ */
+#define SHORT_DEVICE_ID_MIN 0x0001
+#define SHORT_DEVICE_ID_MAX (DECTNRP_SHORT_BROADCAST_ADDRESS - 1)
+
+/* Draw a random short radio device ID, never one of the reserved values. */
+static uint16_t random_short_device_id(void)
+{
+	uint16_t id;
+
+	do {
+		id = (uint16_t)sys_rand32_get();
+	} while (id < SHORT_DEVICE_ID_MIN || id > SHORT_DEVICE_ID_MAX);
+
+	return id;
+}
+
 int main()
 {
 	LOG_DBG("Opener version %d.%d.%d-%s%c", OPENER_VERSION_MAJOR, OPENER_VERSION_MINOR,
@@ -369,7 +387,7 @@ int main()
 			local_device.long_device_id = CONFIG_DECTNRP_SAMPLE_LONG_DEVICE_ID;
 		}
 		/* Assign random short device id. */
-		local_device.short_device_id = sys_rand32_get();
+		local_device.short_device_id = random_short_device_id();
 		local_device.state = DEVICE_STATE_UNSYNCHRONIZED;
 		/* Remote peer not known yet.*/
 		remote_device.short_device_id = DECTNRP_SHORT_BROADCAST_ADDRESS;
