@@ -59,4 +59,13 @@ uint8_t sensor_payload_battery_pct(uint16_t battery_mv);
 int16_t sensor_payload_clamp_i16(int32_t value);
 uint16_t sensor_payload_clamp_u16(int32_t value);
 
+/**
+ * Read the sensors found in the devicetree. Fills every group it can read and sets its flag,
+ * logs a warning naming each group that failed.
+ *
+ * @retval 0 at least one group was read.
+ * @retval -ENODEV no group could be read.
+ */
+int sensor_payload_read(struct sensor_payload_values *values);
+
 #endif /* SENSOR_PAYLOAD_H_ */

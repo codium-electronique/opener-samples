@@ -229,3 +229,41 @@ If you are using vscode the attached `sample-linux.code-workspace <../../sample-
     [00:01:20.293,548] <inf> dectnrp_driver_sample: transmit complete
 
 * You can see that both devices synchronize to one another and exchange there messages with a period of ``CONFIG_DECTNRP_SAMPLE_PERIOD/2``.
+
+Sensor payload
+**************
+
+With ``CONFIG_DECTNRP_SAMPLE_SENSOR_PAYLOAD=y`` the sample reads the SHT4x, the LSM6DSL (with a LIS2MDL on its sensor hub)
+and the nPM13xx charger found in the devicetree before each receive window, and sends them instead of ``Hello World!\n``
+as a 28 byte record in the user plane data (little-endian, ``sensor_payload.h``).
+A group that is not in the devicetree or cannot be read is sent as zeros with its flag bit cleared.
+
+====== ==== ================= ==================================================================
+Offset Size Field             Unit / encoding
+====== ==== ================= ==================================================================
+0      2    magic             ``C0 DE``
+2      1    version           ``01``
+3      1    flags             bit 0 climate, 1 accel, 2 magn, 3 battery valid
+4      2    temperature       i16, 0.01 degC
+6      2    humidity          u16, 0.01 %RH
+8      6    accel x, y, z     i16 x3, mg
+14     6    magn x, y, z      i16 x3, mgauss
+20     2    battery voltage   u16, mV
+22     1    battery level     u8, %, estimated from the voltage, ``FF`` unknown
+23     1    charger status    u8, raw nPM1300 ``BCHGCHARGESTATUS``
+24     1    charger error     u8, raw nPM1300 charger error
+25     2    battery current   i16, mA, positive while charging, negative while discharging
+27     1    VBUS status       u8, raw nPM1300 VBUS status (bit 0: VBUS present)
+====== ==== ================= ==================================================================
+
+The battery level is a piecewise-linear estimate of a single-cell LiPo (4.2 V termination) from its voltage only.
+It reads high while charging and low under load, treat it as indicative.
+
+The option is enabled by ``boards/cod_nrp_node_nrf9151_ns.conf``. Build for the Codium NR+Node with:
+
+.. code-block:: bash
+
+    west build -p -b cod_nrp_node/nrf9151/ns samples/dectnrp-driver -- \
+      -DEXTRA_DTC_OVERLAY_FILE=boards/nrf9151dk_nrf9151_ns.overlay -DEXTRA_CONF_FILE=boards/nrf9151dk_nrf9151_ns.conf
+
+The host tool ``nrp-ping`` of ``opener-dectnrp-rs`` decodes the records.

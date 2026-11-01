@@ -10,7 +10,11 @@ LOG_MODULE_REGISTER(dectnrp_driver_sample, CONFIG_SAMPLE_DRIVER_DECTNRP_LOG_LEVE
 #include "dectnrp_driver_utils.h"
 #include "dectnrp_mac_helper.h"
 #include "dectnrp_operation.h"
+#ifdef CONFIG_DECTNRP_SAMPLE_SENSOR_PAYLOAD
+#include "sensor_payload.h"
+#endif
 #include <opener/build_info.h>
+#include <stdlib.h>
 #include <zephyr/drivers/hwinfo.h>
 #include <zephyr/kernel.h>
 #include <zephyr/net/dectnrp_driver.h>
@@ -432,6 +436,41 @@ int main()
 
 		/* Do periodically receive and send the sample frame via dectnrp_driver. */
 		do {
+#ifdef CONFIG_DECTNRP_SAMPLE_SENSOR_PAYLOAD
+			/* Read before receive(), not before transmit(): the SHT4x read takes about
+			 * 10 ms, which would delay a synchronised TX past its start time. */
+			struct sensor_payload_values sensors;
+			uint8_t sensor_record[SENSOR_PAYLOAD_SIZE];
+
+			ret = sensor_payload_read(&sensors);
+			if (ret != 0) {
+				LOG_WRN("No sensor read, sending flags 0, %d", ret);
+			}
+			sensor_payload_pack(&sensors, sensor_record);
+			ret = sample_frame_build(tx_frame, sizeof(tx_frame), sensor_record,
+						 sizeof(sensor_record));
+			if (ret < 0) {
+				LOG_ERR("Building the tx frame failed, %d", ret);
+				return ret;
+			}
+			char temperature_sign = '+';
+
+			if (sensors.temperature_centi_c < 0) {
+				temperature_sign = '-';
+			}
+			LOG_INF("sensors 0x%02x: %c%d.%02d C %u.%02u %%RH, accel %d %d %d mg, "
+				"magn %d %d %d mG, battery %u mV %u %% %d mA, charger 0x%02x "
+				"err 0x%02x vbus 0x%02x",
+				sensors.flags, temperature_sign,
+				abs(sensors.temperature_centi_c / 100),
+				abs(sensors.temperature_centi_c % 100),
+				sensors.humidity_centi_pct / 100, sensors.humidity_centi_pct % 100,
+				sensors.accel_mg[0], sensors.accel_mg[1], sensors.accel_mg[2],
+				sensors.magn_mgauss[0], sensors.magn_mgauss[1],
+				sensors.magn_mgauss[2], sensors.battery_mv, sensors.battery_pct,
+				sensors.battery_ma, sensors.charger_status, sensors.charger_error,
+				sensors.vbus_status);
+#endif
 			bool received = false;
 			ret = receive(iface, period, &received);
 			if (ret != 0) {

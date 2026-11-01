@@ -12,3 +12,8 @@ target_sources(app PRIVATE
     src/dectnrp_mac_helper.c
     src/main.c
 )
+
+target_sources_ifdef(CONFIG_DECTNRP_SAMPLE_SENSOR_PAYLOAD app PRIVATE
+    src/sensor_payload.c
+    src/sensor_payload_read.c
+)

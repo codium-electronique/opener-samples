@@ -46,3 +46,11 @@ config DECTNRP_SAMPLE_PERIOD
 	default 5000
 	help
 	   The length of the receive window time in milliseconds.
+
+config DECTNRP_SAMPLE_SENSOR_PAYLOAD
+	bool "Send sensor readings instead of Hello World"
+	depends on SENSOR
+	help
+	  Read the SHT4x, LSM6DSL (with a LIS2MDL on its sensor hub) and
+	  nPM13xx charger found in the devicetree before each cycle, and send
+	  them as the 28-byte sensor record described in README.rst.
